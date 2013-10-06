@@ -50,7 +50,7 @@ use JUIT\PdfUtil\PdfToImageRenderer;
 $renderer = new PdfToImageRenderer('/path/to/ghostscript', '/path/to/output_dir');
 $firstPage = 2;
 $lastPage = 5;
-$file = $renderer->render(new SplFileInfo('/path/to/my_file.pdf'), $firstPage, $lastPage);
+$files = $renderer->render(new SplFileInfo('/path/to/my_file.pdf'), $firstPage, $lastPage);
 
 foreach ($files as $file) {
 	// Do something with $file->getPathname() ...
