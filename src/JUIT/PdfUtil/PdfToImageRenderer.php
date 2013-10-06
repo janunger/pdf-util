@@ -12,17 +12,14 @@ class PdfToImageRenderer
     private $ghostscriptBinaryPath;
 
     /**
-     * @var null|string
+     * @var string
      */
-    private $tempDir;
+    private $outputDir;
 
-    public function __construct($ghostscriptBinaryPath = null, $tempDir = null)
+    public function __construct($ghostscriptBinaryPath, $outputDir)
     {
-        if (null === $ghostscriptBinaryPath) {
-            $ghostscriptBinaryPath = '/usr/bin/gs';
-        }
         $this->ghostscriptBinaryPath = $ghostscriptBinaryPath;
-        $this->tempDir = $tempDir;
+        $this->outputDir = $outputDir;
     }
 
     /**
@@ -102,12 +99,7 @@ class PdfToImageRenderer
         $fileName = $pdfFile->getBasename();
         $fileNameWithoutExtension = substr($fileName, 0, strrpos($fileName, '.'));
 
-        $outputDir = $this->tempDir;
-        if (null === $outputDir) {
-            $outputDir = $pdfFile->getPath();
-        }
-
-        return $outputDir . '/' . $fileNameWithoutExtension . '_%d.png';
+        return $this->outputDir . '/' . $fileNameWithoutExtension . '_%d.png';
     }
 
     /**

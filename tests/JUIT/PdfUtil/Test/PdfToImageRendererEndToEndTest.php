@@ -16,11 +16,19 @@ class PdfToImageRendererEndToEndTest extends EndToEndTestCase
         $this->fixturesDir = __DIR__ . '/fixtures';
     }
 
+    /**
+     * @return PdfToImageRenderer
+     */
+    private function createPdfToImageRenderer()
+    {
+        return new PdfToImageRenderer('/usr/bin/gs', self::getTempDir());
+    }
+
     /** @test */
     public function render_png_from_single_page_pdf()
     {
         $referenceImagePath = escapeshellarg($this->fixturesDir . '/single_page_expected.png');
-        $sut = new PdfToImageRenderer(null, self::getTempDir());
+        $sut = $this->createPdfToImageRenderer();
 
         $renderedFiles = $sut->render(new \SplFileInfo($this->fixturesDir . '/single_page.pdf'));
 
@@ -34,7 +42,7 @@ class PdfToImageRendererEndToEndTest extends EndToEndTestCase
     /** @test */
     public function render_all_pages_from_a_multi_page_pdf()
     {
-        $sut = new PdfToImageRenderer(null, self::getTempDir());
+        $sut = $this->createPdfToImageRenderer();
 
         $renderedFiles = $sut->render(new \SplFileInfo($this->fixturesDir . '/three_pages.pdf'));
 
@@ -59,7 +67,7 @@ class PdfToImageRendererEndToEndTest extends EndToEndTestCase
     /** @test */
     public function render_first_page_from_a_multi_page_pdf()
     {
-        $sut = new PdfToImageRenderer(null, self::getTempDir());
+        $sut = $this->createPdfToImageRenderer();
 
         $renderedFile = $sut->renderSinglePage(new \SplFileInfo($this->fixturesDir . '/three_pages.pdf'));
 
@@ -76,7 +84,7 @@ class PdfToImageRendererEndToEndTest extends EndToEndTestCase
     /** @test */
     public function render_second_page_from_a_multi_page_pdf()
     {
-        $sut = new PdfToImageRenderer(null, self::getTempDir());
+        $sut = $this->createPdfToImageRenderer();
 
         $renderedFile = $sut->renderSinglePage(new \SplFileInfo($this->fixturesDir . '/three_pages.pdf'), 2);
 
@@ -94,7 +102,7 @@ class PdfToImageRendererEndToEndTest extends EndToEndTestCase
     /** @test */
     public function render_second_and_third_page_from_a_multi_page_pdf()
     {
-        $sut = new PdfToImageRenderer(null, self::getTempDir());
+        $sut = $this->createPdfToImageRenderer();
 
         $renderedFiles = $sut->render(new \SplFileInfo($this->fixturesDir . '/three_pages.pdf'), 2, 3);
 
