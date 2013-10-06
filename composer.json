@@ -1,7 +1,7 @@
 {
     "name": "juit/pdf-util",
     "type": "library",
-    "license": "proprietary",
+    "license": "MIT",
     "authors": [
         {
             "name": "Jan Unger",
