@@ -27,7 +27,7 @@ class PdfToImageRendererEndToEndTest extends EndToEndTestCase
     /** @test */
     public function render_png_from_single_page_pdf()
     {
-        $referenceImagePath = escapeshellarg($this->fixturesDir . '/single_page_expected.png');
+        $referenceImagePath = $this->fixturesDir . '/single_page_expected.png';
         $sut = $this->createPdfToImageRenderer();
 
         $renderedFiles = $sut->render(new \SplFileInfo($this->fixturesDir . '/single_page.pdf'));
@@ -134,5 +134,26 @@ class PdfToImageRendererEndToEndTest extends EndToEndTestCase
         $sut = $this->createPdfToImageRenderer();
 
         $sut->render(new \SplFileInfo('/no/such/file.pdf'));
+    }
+
+    /** @test */
+    public function resample_image_on_rendering()
+    {
+        $referenceImagePath = $this->fixturesDir . '/single_page_resampled_expected.png';
+        $sut = $this->createPdfToImageRenderer();
+
+        $renderedFiles = $sut->render(
+            new \SplFileInfo($this->fixturesDir . '/single_page.pdf'),
+            null,
+            null,
+            400,
+            400
+        );
+
+        $renderedImagePath = $renderedFiles[0]->getPathname();
+        $this->assertCount(1, $renderedFiles);
+        $this->assertInstanceOf('\SplFileInfo', $renderedFiles[0]);
+        $this->assertEquals(self::getTempDir() . '/single_page_1.png', $renderedImagePath);
+        $this->assertImagesEqual($renderedImagePath, $referenceImagePath);
     }
 }

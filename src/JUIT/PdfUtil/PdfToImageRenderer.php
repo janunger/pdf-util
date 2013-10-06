@@ -26,10 +26,13 @@ class PdfToImageRenderer
      * @param \SplFileInfo $pdfFileInfo
      * @param int|null $firstPage
      * @param int|null $lastPage
+     * @param int|null $maxWidth
+     * @param int|null $maxHeight
      * @throws \RuntimeException
      * @return \SplFileInfo[]
      */
-    public function render(\SplFileInfo $pdfFileInfo, $firstPage = null, $lastPage = null)
+    public function render(\SplFileInfo $pdfFileInfo, $firstPage = null, $lastPage = null,
+                           $maxWidth = null, $maxHeight = null)
     {
         $outputFileNamePattern = $this->createOutputFileNamePattern($pdfFileInfo);
         $shellCommand = $this->createShellCommand($pdfFileInfo, $outputFileNamePattern, $firstPage, $lastPage);
@@ -41,17 +44,27 @@ class PdfToImageRenderer
             throw new \RuntimeException($process->getErrorOutput());
         }
 
-        return $this->extractOutputFileInfos($process->getOutput(), $outputFileNamePattern);
+        $outputFiles = $this->extractOutputFileInfos($process->getOutput(), $outputFileNamePattern);
+
+        if (null !== $maxWidth || null !== $maxHeight) {
+            foreach ($outputFiles as $outputFile) {
+                $this->resample($outputFile, $maxWidth, $maxHeight);
+            }
+        }
+
+        return $outputFiles;
     }
 
     /**
      * @param \SplFileInfo $pdfFile
      * @param int $pageNumber
+     * @param null $maxWidth
+     * @param null $maxHeight
      * @return \SplFileInfo
      */
-    public function renderSinglePage(\SplFileInfo $pdfFile, $pageNumber = 1)
+    public function renderSinglePage(\SplFileInfo $pdfFile, $pageNumber = 1, $maxWidth = null, $maxHeight = null)
     {
-        $files = $this->render($pdfFile, $pageNumber, $pageNumber);
+        $files = $this->render($pdfFile, $pageNumber, $pageNumber, $maxWidth, $maxHeight);
 
         return $files[0];
     }
@@ -71,8 +84,7 @@ class PdfToImageRenderer
             . "-sDEVICE=png16m "
             . "-dTextAlphaBits=4 "
             . "-dGraphicsAlphaBits=4 "
-            . "-dMaxBitmap=500000000 "
-        ;
+            . "-dMaxBitmap=500000000 ";
 
         if (null !== $firstPage) {
             $shellCommand .= "-dFirstPage=$firstPage ";
@@ -84,8 +96,7 @@ class PdfToImageRenderer
         $shellCommand .=
             "-r200 "
             . "-sOutputFile=" . escapeshellarg($outputFileNamePattern) . " "
-            . escapeshellarg($pdfFile->getRealPath())
-        ;
+            . escapeshellarg($pdfFile->getRealPath());
 
         return $shellCommand;
     }
@@ -126,5 +137,35 @@ class PdfToImageRenderer
         }
 
         return $fileInfos;
+    }
+
+    private function resample(\SplFileInfo $file, $maxWidth, $maxHeight)
+    {
+        $res = imagecreatefrompng($file->getPathname());
+
+        list($originalWidth, $originalHeight) = getimagesize($file->getPathname());
+        $ratio = $originalWidth / $originalHeight;
+
+        if ($maxWidth / $maxHeight > $ratio) {
+            $maxWidth = (int)round($maxHeight * $ratio);
+        } else {
+            $maxHeight = (int)round($maxWidth / $ratio);
+        }
+
+        $scaledRes = imagecreatetruecolor($maxWidth, $maxHeight);
+        imagecopyresampled(
+            $scaledRes,
+            $res,
+            0,
+            0,
+            0,
+            0,
+            $maxWidth,
+            $maxHeight,
+            $originalWidth,
+            $originalHeight
+        );
+
+        imagepng($scaledRes, $file->getPathname());
     }
 }
