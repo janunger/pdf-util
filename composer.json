@@ -1,0 +1,29 @@
+{
+    "name": "juit/pdf-util",
+    "type": "library",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Jan Unger",
+            "email": "ju@juit.de",
+            "homepage": "http://www.juit.de",
+            "role": "developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "symfony/process": "@stable"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    }
+}
