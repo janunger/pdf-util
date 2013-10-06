@@ -124,4 +124,15 @@ class PdfToImageRendererEndToEndTest extends EndToEndTestCase
             $i++;
         }
     }
+
+    /**
+     * @test
+     * @expectedException \RuntimeException
+     */
+    public function can_handle_nonexistent_input_file()
+    {
+        $sut = $this->createPdfToImageRenderer();
+
+        $sut->render(new \SplFileInfo('/no/such/file.pdf'));
+    }
 }
