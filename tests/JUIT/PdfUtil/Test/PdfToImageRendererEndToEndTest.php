@@ -5,7 +5,7 @@ namespace JUIT\PdfUtil\Test;
 use JUIT\PdfUtil\PdfToImageRenderer;
 use Symfony\Component\Process\Process;
 
-class PdfToImageRendererTest extends EndToEndTestCase
+class PdfToImageRendererEndToEndTest extends EndToEndTestCase
 {
     /** @test */
     public function can_render_png_from_single_page_pdf()
