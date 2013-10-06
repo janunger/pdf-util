@@ -45,7 +45,9 @@ package { [
     'vim',
     'curl',
     'git-core',
-    'php5-apc'
+    'php5-apc',
+    'ghostscript',
+    'imagemagick'
   ]:
   ensure  => 'installed',
 }
