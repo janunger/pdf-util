@@ -45,7 +45,7 @@ class EndToEndTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             '74ab373396b8c6dd4ca9322fd6edae66',
             $this->calculateHash($diffBmpPath),
-            'Failed asserting that two images are equal.'
+            'Failed asserting that two images ' . $referenceImagePath . ' and ' . $renderedImagePath . ' are equal.'
         );
     }
 
